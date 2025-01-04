@@ -56,7 +56,6 @@ This project was collaboratively developed by:
 
 ## 📧 **Contact**
 For questions or feedback, feel free to reach out:
-- Email: yourname@example.com
 - LinkedIn: [Your LinkedIn Profile](https://linkedin.com/in/riska-lathifah-47ab43216/)
 
 ---
