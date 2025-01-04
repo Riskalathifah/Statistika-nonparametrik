@@ -1,0 +1,127 @@
+---
+title: "Final Project Statistika Nonparametrik"
+author: "Riska"
+date: "2023-12-11"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Set Working Directory
+
+```{r}
+setwd('C:/Users/Riska Lathifah/OneDrive/Documents/DOKUMEN!/SEMESTER 3/STAT NONPAR/final project')
+
+```
+
+# Memanggil library yang dibutuhkan
+
+```{r}
+library(readxl)
+library(nonpar)
+library(DescTools)
+```
+
+# Data
+
+```{r}
+data=read_excel("hidup_provinsi.xlsx")
+head(data)
+```
+
+# Data Numerik
+
+```{r}
+datanumeric <- data[, -which(names(data) == "Provinsi")]
+datanumeric
+```
+
+# Uji Hipotesis K-Sampel Dependen Friedman
+
+$H_0:$Populasi Umur Harapan Hidup pada tahun 2020 - 2023 identik.
+
+$H_1:$Sekurang-kurangnya salah satu tahun cenderung menghasilkan nilai-nilai lebih besar dibanding sekurang-kurangnya salah satu tahun yang lain.
+
+# Statistik Uji
+
+```{r}
+result=friedman.test(data.matrix(datanumeric))
+result
+```
+
+# Kesimpulan
+
+```{r}
+p_value <- result$p.value
+alpha <- 0.05
+if (p_value < alpha) {
+  cat("Kita menolak hipotesis nol. Ada cukup bukti bahwa setidaknya satu tahun cenderung menghasilkan nilai-nilai yang signifikan atau lebih besar.")
+} else {
+  cat("Kita tidak dapat menolak hipotesis nol. Tidak cukup bukti untuk menyatakan bahwa perbedaan rata-rata antara tahun-tahun tersebut signifikan atau besar.")
+}
+```
+
+#Uji K Sampel Dependen Page
+$H_0:$Populasi Umur Harapan Hidup pada tahun 2020 - 2023 identik.
+
+$H_1:$Efek-efek perlakuan berurut, yaitu \(\tau_{2020} \leq \tau_{2021} \leq \tau_{2022} \leq \tau_{2023}\)
+# Statistik Uji
+```{r}
+uji_page <- as.matrix(data.frame(datanumeric))
+result2<-PageTest(uji_page)
+result2
+```
+#Kesimpulan
+```{r}
+p_value <- result2$p.value
+alpha <- 0.05
+if (p_value < alpha) {
+  cat("Kita menolak hipotesis nol. Ada cukup bukti bahwa efek-efek perlakuan berurut.")
+} else {
+  cat("Kita tidak dapat menolak hipotesis nol. Populasi Umur Harapan Hidup pada tahun 2020 - 2023 identik.
+.")
+}
+```
+```{r}
+library(ggplot2)
+library(tidyr)
+
+# Membuat data frame yang sesuai untuk plotting
+data_long <- data %>%
+  pivot_longer(cols = -Provinsi, names_to = "Year", values_to = "UHH")
+
+# Membuat time series plot
+ggplot(data_long, aes(x = Provinsi, y = UHH, group = Year, color = Year)) +
+  geom_line() +
+  labs(title = "Time Series Plot of Umur Harapan Hidup per Provinsi",
+       x = "Provinsi",
+       y = "Umur Harapan Hidup") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "bottom", legend.title = element_blank())
+```
+```{r}
+library(ggplot2)
+library(tidyr)
+
+# Membuat data frame yang sesuai untuk plotting
+data_long <- data %>%
+  pivot_longer(cols = -Provinsi, names_to = "Year", values_to = "UHH")
+
+# Menentukan urutan Provinsi sesuai dengan data
+provinsi_order <- unique(data_long$Provinsi)
+
+# Menggunakan faktor Provinsi dengan urutan yang telah ditentukan
+data_long$Provinsi <- factor(data_long$Provinsi, levels = provinsi_order)
+
+# Membuat time series plot
+ggplot(data_long, aes(x = Provinsi, y = UHH, group = Year, color = Year)) +
+  geom_line() +
+  labs(title = "Time Series Plot of Umur Harapan Hidup per Provinsi",
+       x = "Provinsi",
+       y = "Umur Harapan Hidup") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "bottom", legend.title = element_blank())
+
+```
+
+
